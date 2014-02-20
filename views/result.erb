@@ -1,0 +1,27 @@
+<h3>Blackjack!</h3>
+<div class = "well">
+  <h4>Dealer's Cards:
+    <span style="float:right;">
+      Score: <%= calculate_total session[:dealer_cards]%>
+    </span>
+  </h4>
+  <% session[:dealer_cards].each do |card| %>
+    <%= card_image(card) %>
+  <% end %>
+</div>
+
+<div class = "well">
+  <h4><%= session[:player_name] %>'s cards:
+    <span style="float:right;">
+      Score: <%= calculate_total session[:player_cards]%>
+    </span>
+  </h4>
+  <% session[:player_cards].each do |card| %>
+    <%= card_image(card) %>
+  <% end %>
+</div>
+
+<p>Would <%= session[:player_name] %> like to play again?</p>
+
+<a class= "btn btn-primary" href = "/game">Yes</a>
+<a class= "btn" href = "/end">No</a>
