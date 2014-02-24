@@ -2,3 +2,21 @@ img.card_image {
   border: 2px solid black;
   border-radius: 10px;
 }
+
+form#hit_form {
+  float: left;
+  margin-right: 10px;
+}
+
+form#stay_form {
+  float: left;
+}
+
+form#replay_form {
+  float: left;
+  margin-right: 10px;
+}
+
+form#end_form {
+  float: left;
+}

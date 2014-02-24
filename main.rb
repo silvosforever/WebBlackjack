@@ -6,6 +6,7 @@ set :sessions, true
 
 BLACKJACK_AMOUNT = 21
 DEALER_MIN_HIT = 17
+PLAYER_STARTING_MONEY = 500
 
 helpers do
   def calculate_total(cards)
@@ -45,24 +46,37 @@ helpers do
     "<strong>#{msg}</strong>"
   end
 
+  def update_money(result)
+    if result == "win"
+      session[:player_money] += session[:bet_amount]
+    elsif result == "lose"
+      session[:player_money] -= session[:bet_amount]
+    end
+  end
+
   def game_over?
     dealer_total = calculate_total(session[:dealer_cards])
     player_total = calculate_total(session[:player_cards])
 
     if (dealer_total == BLACKJACK_AMOUNT) && (player_total == BLACKJACK_AMOUNT)
       @success = strongly("#{session[:player_name]} and Dealer hit blackjack!")
+      update_money "tie"
       true
     elsif player_total == BLACKJACK_AMOUNT
       @success = strongly("#{session[:player_name]} hit blackjack!")
+      update_money "win"
       true
     elsif dealer_total == BLACKJACK_AMOUNT
       @error = strongly("Dealer hit blackjack!")
+      update_money "lose"
       true
     elsif player_total > BLACKJACK_AMOUNT
       @error = "Sorry, it looks like " + strongly("#{session[:player_name]} busted.")
+      update_money "lose"
       true
     elsif dealer_total > BLACKJACK_AMOUNT
       @success = "The " + strongly("dealer busted.")
+      update_money "win"
       true
     else
       false
@@ -71,8 +85,8 @@ helpers do
 end
 
 get '/' do
-  if session[:player_name]
-    redirect '/game'
+  if (session[:player_name]) && (session[:player_money] > 0)
+    redirect '/bet'
   else
     redirect '/new_player'
   end
@@ -83,7 +97,7 @@ get '/new_player' do
 end
 
 post '/new_player' do
-  if params[:player_name].empty?
+  if (params[:player_name] == nil) || (params[:player_name].empty?)
     @error = "Name is required"
     halt erb(:new_player)
   end
@@ -94,6 +108,28 @@ post '/new_player' do
   end
 
   session[:player_name] = params[:player_name]
+  session[:player_money] = PLAYER_STARTING_MONEY
+  redirect '/bet'
+end
+
+get '/bet' do
+  erb :bet
+end
+
+post '/bet' do
+  if (params[:bet_amount] == nil) || (params[:bet_amount].empty?)
+    @error = "Bet is required"
+    halt erb(:bet)
+  end
+
+  bet_amount = params[:bet_amount].to_i
+
+  if (bet_amount == 0) || (bet_amount > session[:player_money])
+    @error = "Please bet between $1-$#{session[:player_money]}"
+    halt erb(:bet)
+  end
+
+  session[:bet_amount] = bet_amount
   redirect '/game'
 end
 
@@ -121,11 +157,11 @@ end
 post '/game/player/hit' do
   session[:player_cards] << session[:deck].pop
   if game_over?
-    erb :result
+    erb :result, layout: false
   else
     @success = "Welcome #{session[:player_name]}!"
     @show_hit_and_stay = true
-    erb :game
+    erb :game, layout: false
   end
 end
 
@@ -140,7 +176,7 @@ get '/game/dealer' do
 
   if dealer_total < DEALER_MIN_HIT
     @success = "Dealer chooses to hit."
-    erb :game
+    erb :game, layout: false
   else
     redirect '/game/result'
   end
@@ -149,10 +185,10 @@ end
 post '/game/dealer/hit' do
   session[:dealer_cards] << session[:deck].pop
   if game_over?
-    erb :result
+    erb :result, layout: false
   elsif calculate_total(session[:dealer_cards]) < DEALER_MIN_HIT
     @success = "Dealer chooses to hit again."
-    erb :game
+    erb :game, layout: false
   else
     redirect '/game/result'
   end
@@ -164,17 +200,21 @@ get '/game/result' do
 
   if dealer_total > player_total
     @error = strongly("Dealer wins!")
+    update_money "lose"
   elsif dealer_total < player_total
     @success = strongly("#{session[:player_name]} wins!")
+    update_money "win"
   else
     @success = "It's a " + strongly("push.")
+    update_money "tie"
   end
 
-  erb :result
+  erb :result, layout: false
 end
 
 get '/end' do
   @player_name = session[:player_name]
+  @player_money = session[:player_money]
   session.clear
   erb :end
 end

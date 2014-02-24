@@ -1,27 +1,48 @@
-<h3>Blackjack!</h3>
-<div class = "well">
-  <h4>Dealer's Cards:
-    <span style="float:right;">
-      Score: <%= calculate_total session[:dealer_cards]%>
-    </span>
-  </h4>
-  <% session[:dealer_cards].each do |card| %>
-    <%= card_image(card) %>
+<div id="template">
+  <%if @error %>
+    <div class="alert alert-error"><%=@error%></div>
+  <% end %>
+  <%if @success %>
+    <div class="alert alert-success"><%=@success%></div>
+  <% end %>
+  <h4>Blackjack!</h4>
+  <div class = "well" id="dealer_area">
+    <h5>Dealer's Cards:
+      <span style="float:right;">
+        Score: <%= calculate_total session[:dealer_cards]%>
+      </span>
+    </h5>
+    <% session[:dealer_cards].each do |card| %>
+      <%= card_image(card) %>
+    <% end %>
+  </div>
+
+  <div class = "well" id="player_area">
+    <h5><%= session[:player_name] %>'s cards:
+      <span style="float:right;">
+        Score: <%= calculate_total session[:player_cards]%>
+      </span>
+    </h5>
+    <% session[:player_cards].each do |card| %>
+      <%= card_image(card) %>
+    <% end %>
+  </div>
+
+  <% if session[:player_money] > 0 %>
+    <p><strong><%= session[:player_name] %> has $<%= session[:player_money] %></strong></p>
+    <p>Would <%= session[:player_name] %> like to play again?</p>
+
+    <form id="replay_form" action="/bet" method='get'>
+      <input type="submit" class="btn btn-primary" value="Yes" />
+    </form>
+    <form id="end_form" action="/end" method='get'>
+      <input type="submit" class="btn" value="No" />
+    </form>
+
+  <% else %>
+    <p><%= session[:player_name] %> is out of money.</p>
+    <form id="kicked_form" action="/end" method='get'>
+      <input type="submit" class="btn" value="End" />
+    </form>
   <% end %>
 </div>
-
-<div class = "well">
-  <h4><%= session[:player_name] %>'s cards:
-    <span style="float:right;">
-      Score: <%= calculate_total session[:player_cards]%>
-    </span>
-  </h4>
-  <% session[:player_cards].each do |card| %>
-    <%= card_image(card) %>
-  <% end %>
-</div>
-
-<p>Would <%= session[:player_name] %> like to play again?</p>
-
-<a class= "btn btn-primary" href = "/game">Yes</a>
-<a class= "btn" href = "/end">No</a>

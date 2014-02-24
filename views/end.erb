@@ -1,3 +1,15 @@
-<h3>Bye <%= @player_name %>! Thanks for playing!</h3>
+<div id="template">
+  <%if @error %>
+    <div class="alert alert-error"><%=@error%></div>
+  <% end %>
+  <%if @success %>
+    <div class="alert alert-success"><%=@success%></div>
+  <% end %>
 
-<a class= "btn btn-primary" href='/new_player'>Start Over</a>
+  <h3><%= @player_name %> leaves with $<%= @player_money %></h3>
+  <h3>Bye <%= @player_name %>! Thanks for playing!</h3>
+
+  <form id="start_over_form" action="/new_player" method='get'>
+    <input type="submit" class="btn btn-primary" value="Start Over" />
+  </form>
+</div>
