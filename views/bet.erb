@@ -8,7 +8,7 @@
 
   <h3>How much will <%= session[:player_name] %> bet?</h3>
 
-  <p><strong><%= session[:player_name] %> has $<%= session[:player_money] %></strong></p>
+  <p><strong><%= session[:player_name] %> has $<%= session[:player_money].to_i %></strong></p>
   <form id="bet_form" action='/bet' method='post'>
     Bet Amount: $ <input type='text' name='bet_amount'/>
     <br/>

@@ -6,10 +6,12 @@
     <div class="alert alert-success"><%=@success%></div>
   <% end %>
 
-  <h3><%= @player_name %> leaves with $<%= @player_money %></h3>
-  <h3>Bye <%= @player_name %>! Thanks for playing!</h3>
+  <% if @player_name %>
+    <h3><%= @player_name %> leaves with $<%= @player_money.to_i %></h3>
+    <p>Bye <%= @player_name %>! Thanks for playing!</p>
 
-  <form id="start_over_form" action="/new_player" method='get'>
-    <input type="submit" class="btn btn-primary" value="Start Over" />
-  </form>
+    <form id="start_over_form" action="/new_player" method='get'>
+      <input type="submit" class="btn btn-primary" value="Start Over" />
+    </form>
+  <% end %>
 </div>

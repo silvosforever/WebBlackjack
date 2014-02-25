@@ -113,7 +113,12 @@ post '/new_player' do
 end
 
 get '/bet' do
-  erb :bet
+  if (session[:player_name]) && (session[:player_money] > 0)
+    session[:bet_amount] = nil
+    erb :bet
+  else
+    redirect '/new_player'
+  end
 end
 
 post '/bet' do
@@ -134,6 +139,10 @@ post '/bet' do
 end
 
 get '/game' do
+  if(session[:player_name] == nil) || (session[:player_money] == 0)
+    redirect '/new_player'
+  end
+
   session[:turn] = session[:player_name]
 
   reset_deck

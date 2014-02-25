@@ -5,6 +5,7 @@
   <%if @success %>
     <div class="alert alert-success"><%=@success%></div>
   <% end %>
+
   <h4>Blackjack!</h4>
   <div class = "well" id="dealer_area">
     <h5>Dealer's Cards:
@@ -29,7 +30,7 @@
   </div>
 
   <% if session[:player_money] > 0 %>
-    <p><strong><%= session[:player_name] %> has $<%= session[:player_money] %></strong></p>
+    <p><strong><%= session[:player_name] %> now has $<%= session[:player_money] %></strong></p>
     <p>Would <%= session[:player_name] %> like to play again?</p>
 
     <form id="replay_form" action="/bet" method='get'>
